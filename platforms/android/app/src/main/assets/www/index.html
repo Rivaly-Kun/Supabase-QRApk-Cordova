@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Attendance QR Scanner</title>
+    <link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Student Attendance Scanner</h1>
+            <p class="subtitle">Scan student QR codes to mark attendance</p>
+        </header>
+
+        <div id="event-select-container">
+            <select id="event-select">
+                <option value="">Select an event...</option>
+            </select>
+        </div>
+
+        <div id="scanner-container">
+            <div id="reader"></div>
+        </div>
+
+        <div class="controls">
+            <button id="start-scan" disabled>
+                Start Scanner
+            </button>
+            <button id="stop-scan" disabled>
+                Stop Scanner
+            </button>
+            <button id="refresh">
+                refresh
+            </button>
+        </div>
+
+        <div id="result"></div>
+    </div>
+
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js">
+    </script>
+</body>
+</html>

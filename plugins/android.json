@@ -1,0 +1,19 @@
+{
+  "prepare_queue": {
+    "installed": [],
+    "uninstalled": []
+  },
+  "config_munge": {
+    "files": {}
+  },
+  "installed_plugins": {
+    "cordova-plugin-camera": {
+      "ANDROIDX_CORE_VERSION": "1.6.+",
+      "PACKAGE_NAME": "com.example.qrattendance"
+    },
+    "cordova-plugin-android-permissions": {
+      "PACKAGE_NAME": "com.example.qrattendance"
+    }
+  },
+  "dependent_plugins": {}
+}

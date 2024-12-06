@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.example.qrattendance" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>QRAttendance</name>
+    <description>AttendanceQr</description>
+    <author email="gabzcah@gmail.com">
+       Gabzcah_rival
+    </author>
+    <content src="index.html" />
+    
+    <!-- Allow intents for HTTP and HTTPS -->
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+
+    <!-- Grant access to all domains -->
+    <access origin="*" />
+
+    <!-- Enable cleartext traffic for HTTP if needed -->
+    <preference name="AndroidInsecureFileModeEnabled" value="true" />
+    <preference name="AndroidLaunchMode" value="singleTask" />
+    <preference name="AllowUntrustedCertificates" value="true" />
+    
+    <!-- Allow access to the camera -->
+    <feature name="Camera">
+        <param name="android-package" value="org.apache.cordova.camera.CameraLauncher" />
+    </feature>
+
+    <!-- Android platform-specific configuration -->
+    <platform name="android">
+        <!-- Icon for Android -->
+        <icon src="res/icon.png" />
+
+        <!-- Splash screen for Android -->
+        <splash src="res/icon.png" />
+    </platform>
+</widget>
