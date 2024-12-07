@@ -1,4 +1,4 @@
-Download the TeacherScannerApp.apk Directly 
+Download the ScannerQR.apk.apk Directly 
 if corrupted rebuild using
 
 Install cordova dependencies first
