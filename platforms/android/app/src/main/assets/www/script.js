@@ -2,29 +2,22 @@ const supabaseUrl = 'https://oyjytztjoxmxxelrqzfs.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im95anl0enRqb3hteHhlbHJxemZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzIxNzI3MzgsImV4cCI6MjA0Nzc0ODczOH0.pM2b5_8UMdWnWrWXykYdYggEyJrOlv-3T_x8Ls_lQCw';
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-let html5QrcodeScanner = null;
-
 const startScanBtn = document.getElementById('start-scan');
 const stopScanBtn = document.getElementById('stop-scan');
-const resultDiv = document.getElementById('result');
 const eventSelect = document.getElementById('event-select');
+const resultDiv = document.getElementById('result');
 const refresh = document.getElementById('refresh');
+
+let html5QrcodeScanner = null;
 
 const qrConfig = {
     fps: 30,
-    qrbox: { width: 250, height: 250 },
-    aspectRatio: 1.0
+    qrbox: { width: 250, height: 250 }
 };
-
-function onRefreshClick() {
-    loadEvents();
-}
-
-refresh.addEventListener('click', onRefreshClick);
 
 async function loadEvents() {
     try {
-        eventSelect.innerHTML = ''; // Clear dropdown options
+        eventSelect.innerHTML = '<option value="">Select an event...</option>'; // Clear previous options
 
         const { data: events, error } = await supabaseClient
             .from('events')
@@ -34,11 +27,17 @@ async function loadEvents() {
 
         if (error) throw error;
 
+        if (events.length === 0) {
+            eventSelect.innerHTML = '<option value="">No upcoming events available.</option>';
+            startScanBtn.disabled = true;
+            return;
+        }
+
         events.forEach(event => {
             const option = document.createElement('option');
             option.value = event.id;
-            const eventDate = new Date(event.time_starts);
-            option.textContent = `${event.name} - ${eventDate.toLocaleString()}`;
+            const eventDate = new Date(event.time_starts).toLocaleString();
+            option.textContent = `${event.name} - ${eventDate}`;
             eventSelect.appendChild(option);
         });
 
@@ -46,18 +45,22 @@ async function loadEvents() {
             startScanBtn.disabled = !eventSelect.value;
         });
     } catch (err) {
-        showError('Error loading events. Please refresh the app.');
-        console.error('Error loading events:', err);
+        showError('Error loading events. Please try again.');
+        console.error(err);
     }
 }
 
-function onScanSuccess(decodedText) {
-    stopScanner();
-    processAttendance(decodedText);
+function showResult({ student, status, message }) {
+    resultDiv.innerHTML = `
+        <div class="status-message ${status.toLowerCase()}">
+            ${student ? `<strong>${student.name}</strong><br>` : ''}
+            ${message}
+        </div>
+    `;
 }
 
-function onScanFailure(error) {
-    console.warn(`QR scan error: ${error}`);
+function showError(message) {
+    resultDiv.innerHTML = `<div class="camera-error">${message}</div>`;
 }
 
 async function startScanner() {
@@ -79,13 +82,10 @@ async function startScanner() {
         stopScanBtn.disabled = false;
         eventSelect.disabled = true;
 
-        showResult({
-            status: 'READY',
-            message: 'Camera started successfully. Ready to scan QR codes.'
-        });
+        showResult({ status: 'READY', message: 'Camera started. Ready to scan.' });
     } catch (err) {
-        showError("Unable to access camera. Please check permissions.");
-        console.error("Scanner error:", err);
+        showError('Unable to access the camera. Check permissions.');
+        console.error(err);
     }
 }
 
@@ -98,7 +98,7 @@ async function stopScanner() {
             stopScanBtn.disabled = true;
             eventSelect.disabled = false;
         } catch (err) {
-            console.error("Error stopping scanner:", err);
+            console.error('Error stopping scanner:', err);
         }
     }
 }
@@ -209,29 +209,16 @@ async function processAttendance(studentDatabaseId) {
     }
 }
 
-
-
-function showResult({ status, message, student, scannedAt }) {
-    const statusClass = {
-        PRESENT: 'present',
-        MISSED: 'late',
-        TOO_EARLY: 'early',
-        ALREADY_RECORDED: 'present'
-    }[status] || '';
-
-    resultDiv.innerHTML = `
-        <div class="status-message ${statusClass}">
-            <strong>${student ? student.name : ''}</strong><br>
-            ${message}<br>
-            ${scannedAt ? `Scanned at: ${scannedAt.toLocaleString()}` : ''}
-        </div>
-    `;
+function onScanSuccess(studentDatabaseId) {
+    stopScanner();
+    processAttendance(studentDatabaseId);
 }
 
-function showError(message) {
-    resultDiv.innerHTML = `<div class="camera-error">${message}</div>`;
+function onScanFailure(error) {
+    console.warn('Scan failure:', error);
 }
 
+refresh.addEventListener('click', loadEvents);
 startScanBtn.addEventListener('click', startScanner);
 stopScanBtn.addEventListener('click', stopScanner);
 
